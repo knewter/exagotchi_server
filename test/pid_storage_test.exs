@@ -14,8 +14,7 @@ defmodule PidStorageTest do
 
   test "storing a pid", meta do
     pid = spawn(FakeServer, :start, [])
-    {status, uuid} = PidServer.store(pid)
-    assert :ok == status
+    {:ok, uuid} = PidServer.store(pid)
     assert is_atom(uuid)
     assert PidServer.fetch(uuid) == pid
   end

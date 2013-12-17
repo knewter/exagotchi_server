@@ -7,12 +7,22 @@ defmodule ExagotchiServer.Main do
   layout false
 
   def index([], conn) do
-    creature = get_creature(conn) || spawn_creature(conn)
+    creature = get_creature(conn)
     stats  = Exagotchi.Creature.get_stats(creature)
     age    = stats[:age]
     hungry = Exagotchi.Creature.hungry?(creature)
     sad    = Exagotchi.Creature.sad?(creature)
     {:render, [age: age, hungry: hungry, sad: sad], []}
+  end
+
+  def feed([], conn) do
+    Exagotchi.Creature.feed(get_creature(conn))
+    {:redirect, "/"}
+  end
+
+  def play([], conn) do
+    Exagotchi.Creature.play(get_creature(conn))
+    {:redirect, "/"}
   end
 
   def spawn_creature(conn) do
@@ -25,7 +35,7 @@ defmodule ExagotchiServer.Main do
   def get_creature(conn) do
     uuid = get_session(conn, :creature)
     case uuid do
-      [] -> false
+      [] -> spawn_creature(conn)
       _  -> PidServer.fetch(uuid)
     end
   end
